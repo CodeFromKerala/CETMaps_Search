@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta name="theme-color" content="#0b3d2e" />
+		<title>CETMaps · Campus Navigation</title>
+		<link rel="manifest" href="./manifest.webmanifest" />
+		<link rel="icon" sizes="192x192" href="./public/icons/icon-192.svg" />
+		<link rel="apple-touch-icon" href="./public/icons/icon-192.svg" />
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+			integrity="sha256-sA+e2tuZVKbFI5u7FN5zYEcMcbBawBf3vGh6V6pQ5wE="
+			crossorigin=""
+		/>
+		<link rel="stylesheet" href="./src/styles.css" />
+	</head>
+	<body>
+		<div class="app-shell">
+			<header class="app-header">
+				<div>
+					<p class="eyebrow">College of Engineering Trivandrum</p>
+					<h1>CETMaps</h1>
+				</div>
+				<button id="installButton" type="button" aria-label="Install CETMaps">Install</button>
+			</header>
+
+			<section class="controls" aria-label="Search and filters">
+				<label class="input-label" for="searchInput">Find a building, hostel, or landmark</label>
+				<div class="search-row">
+					<input id="searchInput" type="search" placeholder="Try \"EEE block\", \"LH\", or \"Ground\"" autocomplete="off" />
+					<button id="searchButton" type="button">Go</button>
+				</div>
+				<div class="alias-hints" aria-live="polite">
+					Popular shortcuts: EEE block · LH · Ground · Library · Civil block
+				</div>
+
+				<div class="filter-row">
+					<label><input id="buildingsToggle" type="checkbox" checked /> Buildings</label>
+					<label><input id="landmarksToggle" type="checkbox" checked /> Landmarks</label>
+					<label><input id="hostelsToggle" type="checkbox" checked /> Hostels</label>
+					<label><input id="pathsToggle" type="checkbox" checked /> Walking paths</label>
+				</div>
+
+				<div class="route-row">
+					<div>
+						<label class="input-label" for="startSelect">Start</label>
+						<select id="startSelect"></select>
+					</div>
+					<div>
+						<label class="input-label" for="endSelect">Destination</label>
+						<select id="endSelect"></select>
+					</div>
+					<button id="routeButton" type="button">Route</button>
+				</div>
+			</section>
+
+			<main>
+				<div id="map" role="region" aria-label="Interactive campus map"></div>
+				<section class="info-panel" aria-live="polite">
+					<p id="locationStatus">Waiting for GPS lock…</p>
+					<p id="routeSummary">Select a start and destination to see walking time.</p>
+					<ul id="results" aria-label="Search results"></ul>
+				</section>
+			</main>
+		</div>
+
+		<template id="resultTemplate">
+			<li>
+				<div class="result-text">
+					<strong data-name></strong>
+					<span data-type></span>
+					<span data-desc></span>
+				</div>
+				<button type="button" data-focus>Locate</button>
+			</li>
+		</template>
+
+		<script
+			src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+			integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7uVFM0LmI6H7Yx04EcZ0XY="
+			crossorigin=""
+		></script>
+		<script type="module" src="./src/app.js"></script>
+	</body>
+</html>
