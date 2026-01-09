@@ -123,9 +123,10 @@ async function loadCampusBoundary() {
   }
   boundaryLayer = L.geoJSON(polygonFeatures, {
     style: {
-      color: "#14604d",
-      weight: 1.5,
-      fillOpacity: 0.03
+      color: "transparent",
+      weight: 0,
+      opacity: 0,
+      fillOpacity: 0
     }
   }).addTo(map);
   boundaryRings = collectBoundaryRings(polygonFeatures);
@@ -308,7 +309,9 @@ async function loadGeoJsonLayers() {
       }
     });
 
-    layer.addTo(map);
+    if (dataset.id !== "paths") {
+      layer.addTo(map);
+    }
     layerStore.set(dataset.id, layer);
   });
 }
@@ -432,13 +435,12 @@ function getLatLng(place) {
 function drawRoute(latlngs) {
   if (routeLine) {
     routeLine.remove();
+    routeLine = null;
   }
-  routeLine = L.polyline(latlngs, {
-    color: "#f2542d",
-    weight: 5,
-    opacity: 0.9
-  }).addTo(map);
-  map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+  const bounds = L.latLngBounds(latlngs);
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
 }
 
 function buildGraph(features) {
