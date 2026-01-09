@@ -282,9 +282,8 @@ async function loadGeoJsonLayers() {
       const layer = L.geoJSON(geojson, {
         style: {
           color: dataset.color,
-          dashArray: "6 8",
-          weight: 3,
-          opacity: 0.8
+          weight: 4,
+          opacity: 0.95
         }
       });
       layer.addTo(map);
