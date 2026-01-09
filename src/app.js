@@ -189,7 +189,9 @@ function pointInRing(lat, lng, ring) {
     const xi = ring[i][1];
     const yj = ring[j][0];
     const xj = ring[j][1];
-    const intersect = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi + Number.EPSILON) + xi;
+    const denom = yj - yi;
+    const slope = denom === 0 ? 0 : ((xj - xi) * (lat - yi)) / denom;
+    const intersect = yi > lat !== yj > lat && lng < slope + xi;
     if (intersect) inside = !inside;
   }
   return inside;
