@@ -1,5 +1,5 @@
 const MAP_CENTER = [8.54589, 76.90585];
-const DEFAULT_ZOOM = 17;
+const DEFAULT_ZOOM = 18;
 const WALKING_SPEED_MPS = 1.4;
 const BOUNDARY_URL = "./data/cet_loc_v1.geojson";
 
@@ -58,6 +58,10 @@ let routeLine;
 let graphNodes = null;
 let boundaryLayer;
 let campusBounds;
+let maskLayer;
+let boundaryRings = [];
+let boundaryPolygons = [];
+let locationWarningShown = false;
 
 const layerStore = new Map();
 const featureIndex = [];
@@ -117,11 +121,78 @@ async function loadCampusBoundary() {
       fillOpacity: 0.03
     }
   }).addTo(map);
+  boundaryRings = collectBoundaryRings(geojson);
+  boundaryPolygons = boundaryRings.map((ring) => ring.map((pair) => [...pair]));
+  createMaskLayer();
   campusBounds = boundaryLayer.getBounds();
   if (campusBounds.isValid()) {
     map.setMaxBounds(campusBounds.pad(0.0025));
-    map.fitBounds(campusBounds, { padding: [40, 40] });
+    map.fitBounds(campusBounds, { padding: [20, 20], maxZoom: DEFAULT_ZOOM });
   }
+}
+
+function collectBoundaryRings(geojson) {
+  const rings = [];
+  geojson.features.forEach((feature) => {
+    const geometry = feature.geometry;
+    if (!geometry) return;
+    if (geometry.type === "Polygon") {
+      geometry.coordinates.forEach((ring, index) => {
+        if (index === 0) {
+          rings.push(ring.map(([lng, lat]) => [lat, lng]));
+        }
+      });
+    } else if (geometry.type === "MultiPolygon") {
+      geometry.coordinates.forEach((polygon) => {
+        if (polygon[0]) {
+          rings.push(polygon[0].map(([lng, lat]) => [lat, lng]));
+        }
+      });
+    }
+  });
+  return rings;
+}
+
+function createMaskLayer() {
+  if (!boundaryRings.length) return;
+  if (maskLayer) {
+    maskLayer.remove();
+  }
+  const outerRing = [
+    [90, -180],
+    [90, 180],
+    [-90, 180],
+    [-90, -180]
+  ];
+  maskLayer = L.polygon([outerRing, ...boundaryRings], {
+    stroke: false,
+    fillColor: "#e2efe7",
+    fillOpacity: 0.75,
+    interactive: false,
+    fillRule: "evenodd"
+  }).addTo(map);
+}
+
+function showBoundaryPopup(lat, lng, message) {
+  L.popup().setLatLng([lat, lng]).setContent(message).openOn(map);
+}
+
+function isInsideCampus(lat, lng) {
+  if (!boundaryPolygons.length) return true;
+  return boundaryPolygons.some((ring) => pointInRing(lat, lng, ring));
+}
+
+function pointInRing(lat, lng, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const yi = ring[i][0];
+    const xi = ring[i][1];
+    const yj = ring[j][0];
+    const xj = ring[j][1];
+    const intersect = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi + Number.EPSILON) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
 }
 
 function wireQuickFilters() {
@@ -284,6 +355,10 @@ function populateSelect(selectEl, list, includeLocationShortcut) {
 function focusOnPlace(placeId) {
   const place = featureById.get(placeId);
   if (!place) return;
+  if (!isInsideCampus(place.lat, place.lng)) {
+    showBoundaryPopup(place.lat, place.lng, "This location lies outside the CET boundary.");
+    return;
+  }
   if (focusMarker) {
     focusMarker.remove();
   }
@@ -316,6 +391,16 @@ routeButton.addEventListener("click", () => {
   }
   if (!endPoint) {
     routeSummary.textContent = "Destination unavailable.";
+    return;
+  }
+  if (!isInsideCampus(endPoint.lat, endPoint.lng)) {
+    routeSummary.textContent = "Destination lies outside CET campus.";
+    showBoundaryPopup(endPoint.lat, endPoint.lng, "Destination lies outside the CET boundary.");
+    return;
+  }
+  if (startValue === "my-location" && !isInsideCampus(startPoint.lat, startPoint.lng)) {
+    routeSummary.textContent = "Your location is outside CET campus.";
+    showBoundaryPopup(startPoint.lat, startPoint.lng, "Starting point lies outside the CET boundary.");
     return;
   }
   if (!graphNodes) {
@@ -513,6 +598,13 @@ function updateLocationMarker(latlng, accuracy) {
   } else {
     accuracyCircle.setLatLng(latlng);
     accuracyCircle.setRadius(accuracy);
+  }
+
+  if (isInsideCampus(latlng.lat, latlng.lng)) {
+    locationWarningShown = false;
+  } else if (!locationWarningShown) {
+    showBoundaryPopup(latlng.lat, latlng.lng, "You are currently outside the CET boundary.");
+    locationWarningShown = true;
   }
 }
 
