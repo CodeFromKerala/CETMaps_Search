@@ -111,17 +111,24 @@ async function loadCampusBoundary() {
     throw new Error("Unable to fetch campus boundary");
   }
   const geojson = await response.json();
+  const polygonFeatures = {
+    type: "FeatureCollection",
+    features: geojson.features.filter((feature) => {
+      const geomType = feature.geometry?.type;
+      return geomType === "Polygon" || geomType === "MultiPolygon";
+    })
+  };
   if (boundaryLayer) {
     boundaryLayer.remove();
   }
-  boundaryLayer = L.geoJSON(geojson, {
+  boundaryLayer = L.geoJSON(polygonFeatures, {
     style: {
       color: "#14604d",
       weight: 1.5,
       fillOpacity: 0.03
     }
   }).addTo(map);
-  boundaryRings = collectBoundaryRings(geojson);
+  boundaryRings = collectBoundaryRings(polygonFeatures);
   boundaryPolygons = boundaryRings.map((ring) => ring.map((pair) => [...pair]));
   createMaskLayer();
   campusBounds = boundaryLayer.getBounds();
