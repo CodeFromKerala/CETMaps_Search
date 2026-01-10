@@ -16,6 +16,21 @@
   --border-soft: 1px solid rgba(11, 28, 44, 0.08);
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --sky: #1a1f2e;
+  --sand: #0f1419;
+  --ink: #e8eaed;
+  --muted: #9ca3af;
+  --panel: rgba(30, 35, 45, 0.96);
+  --panel-strong: rgba(30, 35, 45, 0.98);
+  --chip-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --sheet-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  --accent: #4a9eff;
+  --accent-strong: #6bb0ff;
+  --border-soft: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 * {
   box-sizing: border-box;
 }

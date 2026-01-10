@@ -65,11 +65,20 @@ const map = L.map("map", {
 L.control.zoom({ position: "bottomright" }).addTo(map);
 L.control.scale({ position: "bottomleft" }).addTo(map);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", {
+const lightTiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", {
   maxZoom: 20,
   attribution: "&copy; OpenStreetMap contributors, &copy; CARTO",
   tileSize: 256
-}).addTo(map);
+});
+
+const darkTiles = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png", {
+  maxZoom: 20,
+  attribution: "&copy; OpenStreetMap contributors, &copy; CARTO",
+  tileSize: 256
+});
+
+let currentTiles = lightTiles;
+currentTiles.addTo(map);
 
 initialize();
 
@@ -78,6 +87,7 @@ async function initialize() {
   wireSearch();
   wireQuickFilters();
   wireToggles();
+  wireDarkMode();
   wireCursorTracker();
   watchLocation();
   try {
@@ -101,6 +111,46 @@ function wireCursorTracker() {
   map.on("mouseout", () => {
     cursorCoords.style.opacity = "0";
   });
+}
+
+function wireDarkMode() {
+  const darkModeToggle = document.getElementById("darkModeToggle");
+  if (!darkModeToggle) return;
+
+  // Check for saved preference or default to light mode
+  const savedTheme = localStorage.getItem("theme") || "light";
+  if (savedTheme === "dark") {
+    enableDarkMode();
+  }
+
+  darkModeToggle.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (currentTheme === "dark") {
+      disableDarkMode();
+    } else {
+      enableDarkMode();
+    }
+  });
+}
+
+function enableDarkMode() {
+  document.documentElement.setAttribute("data-theme", "dark");
+  localStorage.setItem("theme", "dark");
+  if (currentTiles === lightTiles) {
+    map.removeLayer(lightTiles);
+    darkTiles.addTo(map);
+    currentTiles = darkTiles;
+  }
+}
+
+function disableDarkMode() {
+  document.documentElement.setAttribute("data-theme", "light");
+  localStorage.setItem("theme", "light");
+  if (currentTiles === darkTiles) {
+    map.removeLayer(darkTiles);
+    lightTiles.addTo(map);
+    currentTiles = lightTiles;
+  }
 }
 
 function showBoundaryPopup(lat, lng, message) {
