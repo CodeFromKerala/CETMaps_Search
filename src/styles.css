@@ -74,7 +74,7 @@ body {
   box-shadow: none !important;
   font-weight: 600;
   font-size: 0.7rem;
-  color: var(--ink);
+  color: #0b1c2c;
   text-shadow: 
     -1px -1px 0 #fff,
     1px -1px 0 #fff,
@@ -83,6 +83,16 @@ body {
     0 0 3px #fff;
   pointer-events: none;
   white-space: nowrap;
+}
+
+[data-theme="dark"] .building-label {
+  color: #e8eaed;
+  text-shadow: 
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    0 0 3px #000;
 }
 
 .building-label::before {
