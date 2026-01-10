@@ -244,7 +244,12 @@ async function loadGeoJsonLayers() {
         const props = feature.properties || {};
         const name = getFeatureName(props);
         if (name) {
-          layerRef.bindPopup(`<strong>${name}</strong>`);
+          const type = getFeatureType(props);
+          layerRef.bindPopup(`<strong>${name}</strong><br><em>${type}</em>`);
+          layerRef.on('click', () => {
+            layerRef.openPopup();
+          });
+          registerPlace(feature);
         }
       }
     });
@@ -281,19 +286,18 @@ async function loadGeoJsonLayers() {
 }
 
 function getFeatureName(props) {
-  // Try various property names that might contain the feature name
+  // Get the first property key's value (the actual property name from cet.geojson)
   const keys = Object.keys(props);
-  for (const key of keys) {
-    if (key.toLowerCase().includes('name') || key === 'Name') {
-      return props[key];
-    }
+  if (keys.length === 0) return null;
+  
+  // Return the value of the first property key
+  const firstKey = keys[0];
+  const value = props[firstKey];
+  
+  if (value && typeof value === 'string' && value.trim()) {
+    return value.trim();
   }
-  // If no name property, use the first non-empty property value
-  for (const key of keys) {
-    if (props[key] && typeof props[key] === 'string' && props[key].trim()) {
-      return props[key];
-    }
-  }
+  
   return null;
 }
 
@@ -316,7 +320,35 @@ function registerPlace(feature) {
   const name = getFeatureName(props);
   if (!name) return;
   
-  const [lng, lat] = feature.geometry.coordinates;
+  let lat, lng;
+  const geomType = feature.geometry.type;
+  
+  if (geomType === 'Point') {
+    [lng, lat] = feature.geometry.coordinates;
+  } else if (geomType === 'Polygon') {
+    // Calculate centroid of polygon
+    const coords = feature.geometry.coordinates[0];
+    let sumLat = 0, sumLng = 0;
+    coords.forEach(([lon, la]) => {
+      sumLng += lon;
+      sumLat += la;
+    });
+    lng = sumLng / coords.length;
+    lat = sumLat / coords.length;
+  } else if (geomType === 'MultiPolygon') {
+    // Use first polygon's centroid
+    const coords = feature.geometry.coordinates[0][0];
+    let sumLat = 0, sumLng = 0;
+    coords.forEach(([lon, la]) => {
+      sumLng += lon;
+      sumLat += la;
+    });
+    lng = sumLng / coords.length;
+    lat = sumLat / coords.length;
+  } else {
+    return; // Skip other geometry types
+  }
+  
   const type = getFeatureType(props);
   const entry = {
     id: props.id || featureIndex.length,
