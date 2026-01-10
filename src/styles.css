@@ -53,6 +53,27 @@ body {
   font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 }
 
+.building-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--ink);
+  text-shadow: 
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff,
+    0 0 3px #fff;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.building-label::before {
+  display: none;
+}
+
 .top-bar {
   position: absolute;
   top: 1.25rem;
