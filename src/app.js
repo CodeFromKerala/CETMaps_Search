@@ -523,6 +523,33 @@ function drawRoute(latlngs) {
     routeLine.remove();
     routeLine = null;
   }
+  
+  // Draw the route line on the map
+  routeLine = L.polyline(latlngs, {
+    color: '#0d74ff',
+    weight: 6,
+    opacity: 0.8,
+    lineJoin: 'round',
+    lineCap: 'round'
+  }).addTo(map);
+  
+  // Add animated dashes for visual effect
+  const dashLine = L.polyline(latlngs, {
+    color: '#ffffff',
+    weight: 2,
+    opacity: 0.9,
+    dashArray: '10, 10',
+    dashOffset: '0',
+    className: 'route-dash-line'
+  }).addTo(map);
+  
+  // Store both lines so we can remove them together
+  const originalRemove = routeLine.remove.bind(routeLine);
+  routeLine.remove = function() {
+    dashLine.remove();
+    return originalRemove();
+  };
+  
   const bounds = L.latLngBounds(latlngs);
   if (bounds.isValid()) {
     map.fitBounds(bounds, { padding: [30, 30] });

@@ -99,6 +99,17 @@ body {
   display: none;
 }
 
+/* Route animation */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.route-dash-line {
+  animation: dash 1s linear infinite;
+}
+
 .top-bar {
   position: absolute;
   top: 1.25rem;
