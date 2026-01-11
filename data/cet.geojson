@@ -770,20 +770,6 @@
     },
     {
       "type": "Feature",
-      "properties": {
-        "India Post PO": ""
-      },
-      "geometry": {
-        "coordinates": [
-          76.90444784227282,
-          8.546223254184241
-        ],
-        "type": "Point"
-      },
-      "id": 33
-    },
-    {
-      "type": "Feature",
       "properties": {},
       "geometry": {
         "coordinates": [
@@ -975,7 +961,7 @@
         ],
         "type": "LineString"
       },
-      "id": 43
+      "id": 39
     },
     {
       "type": "Feature",
@@ -996,7 +982,8 @@
           ]
         ],
         "type": "LineString"
-      }
+      },
+      "id": 40
     },
     {
       "type": "Feature",
@@ -1344,20 +1331,6 @@
     {
       "type": "Feature",
       "properties": {
-        "Ground": ""
-      },
-      "geometry": {
-        "coordinates": [
-          76.90416717979076,
-          8.544249427703221
-        ],
-        "type": "Point"
-      },
-      "id": 67
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "Civil Dept": ""
       },
       "geometry": {
@@ -1368,20 +1341,6 @@
         "type": "Point"
       },
       "id": 69
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Canteen": ""
-      },
-      "geometry": {
-        "coordinates": [
-          76.90455577219848,
-          8.54530330227783
-        ],
-        "type": "Point"
-      },
-      "id": 70
     },
     {
       "type": "Feature",
@@ -1701,7 +1660,7 @@
         ],
         "type": "Polygon"
       },
-      "id": 74
+      "id": 63
     },
     {
       "type": "Feature",
@@ -1843,7 +1802,7 @@
         ],
         "type": "Polygon"
       },
-      "id": 77
+      "id": 64
     },
     {
       "type": "Feature",
@@ -2481,7 +2440,7 @@
         ],
         "type": "Polygon"
       },
-      "id": 83
+      "id": 73
     },
     {
       "type": "Feature",
@@ -4239,6 +4198,82 @@
           [
             76.9035965445425,
             8.543577193952444
+          ]
+        ],
+        "type": "LineString"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Ground": ""
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              76.9037628253887,
+              8.544383227497093
+            ],
+            [
+              76.90377477492746,
+              8.544307599258829
+            ],
+            [
+              76.90366961899161,
+              8.543816015341946
+            ],
+            [
+              76.90408068310575,
+              8.543551316048706
+            ],
+            [
+              76.90474507743016,
+              8.544220154089004
+            ],
+            [
+              76.9043770316535,
+              8.544785002262685
+            ],
+            [
+              76.9037628253887,
+              8.544383227497093
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": 113
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": [
+          [
+            76.9052510830657,
+            8.545712519222363
+          ],
+          [
+            76.90527824838762,
+            8.545723764501943
+          ]
+        ],
+        "type": "LineString"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "coordinates": [
+          [
+            76.90517927597574,
+            8.545507227739904
+          ],
+          [
+            76.9052353117674,
+            8.545425866359182
           ]
         ],
         "type": "LineString"
